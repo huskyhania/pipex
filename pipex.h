@@ -6,7 +6,7 @@
 /*   By: hskrzypi <hskrzypi@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/27 14:06:12 by hskrzypi          #+#    #+#             */
-/*   Updated: 2024/10/12 17:39:51 by hskrzypi         ###   ########.fr       */
+/*   Updated: 2024/10/17 13:07:33 by hskrzypi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,8 @@ typedef struct  s_pipex_variables
 	char	**cmd2;
 	char	*infile;
 	char	*outfile;
+	int	input_fd;
+	int	output_fd;
 	int	exitcode;
 }       t_var;
 
@@ -37,5 +39,12 @@ char	*get_command_path(const char *cmd, char **envp);
 
 void	free_array(char **array);
 void	exit_on_error(t_var *px_var, char *info, int is_file_error);
+void	init_variables(char **argv, char **envp, t_var *px_var);
+
+void	execute_command(t_var *px_var, int input_fd, int output_fd, char **cmd);
+void	handle_first_child(t_var *px_var, int fd[2]);
+void	handle_second_child(t_var *px_var, int fd[2]);
+void	wait_for_processes(t_var *px_var, int pid1, int pid2);
+void	clean_up(t_var *px_var);
 
 #endif
