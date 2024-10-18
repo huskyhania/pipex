@@ -6,7 +6,7 @@
 /*   By: hskrzypi <hskrzypi@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/12 14:11:43 by hskrzypi          #+#    #+#             */
-/*   Updated: 2024/10/12 20:21:10 by hskrzypi         ###   ########.fr       */
+/*   Updated: 2024/10/18 15:51:20 by hskrzypi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,26 +40,22 @@ void exit_on_error(t_var *px_var, char *info, int is_file_error)
     }
     else
     {
-        // Handle command execution errors
-        if (errno == EACCES)
-        {
-            // Permission denied for command execution
-            px_var->exitcode = 1; // Exit code 1 for permission denied on command
-            perror(info);
-        }
-        else if (errno == ENOENT)
-        {
-            // Command not found
-            px_var->exitcode = 127; // Exit code 127 for command not found
-            perror(info);
-        }
-        else
-        {
-            // General command execution error
-            px_var->exitcode = 1; // Default exit code for other command errors
-            perror(info);
-        }
+	    px_var->exitcode = errno;
+	    if (errno == ENOENT || errno == EACCES || errno == EISDIR)
+		    perror(info);
+	    else
+	    {
+		    ft_putstr_fd(info, 2);
+		    ft_putendl_fd(": command not found", 2);
+	    }
+	    if (px_var->cmd1)
+		    free_array(px_var->cmd1);
+	    if (px_var->cmd2)
+		    free_array(px_var->cmd2);
+	    if (px_var->exitcode == EACCES || px_var->exitcode == EISDIR)
+		    px_var->exitcode = 126;
+	    else
+		    px_var->exitcode = 127;
+	    exit(px_var->exitcode);
     }
-
-    exit(px_var->exitcode); // Exit with the determined exit code
 }

@@ -26,9 +26,15 @@ void execute_command(t_var *px_var, int input_fd, int output_fd, char **cmd)
     if (!cmd_path)
     {
 	    clean_up(px_var);
+        perror("command path fail");
+//        if (px_var->cmd1)
+//          free_array(px_var->cmd1);
+//       if (px_var->cmd2)
+//            free_array(px_var->cmd2);
 	    exit_on_error(px_var, cmd[0], 0); // Handle error
     }
-    execve(cmd_path, cmd, px_var->envp);  // Execute the command
+    execve(cmd_path, cmd, px_var->envp);
+    perror("execve fail");  // Execute the command
     free(cmd_path);
     clean_up(px_var);
     exit_on_error(px_var, "execve error", 0); // If execve fails
