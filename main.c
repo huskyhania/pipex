@@ -23,11 +23,11 @@ int main(int argc, char **argv, char **envp)
 		return (1);
 	}
 	init_variables(argv, envp, &px_var);
-	if (!px_var.cmd1 || !px_var.cmd2)
-	{
-		printf("i'm exiting from main\n");
-		exit_on_error(&px_var, "Command not found", 0);
-	}
+	//if (!px_var.cmd1 || !px_var.cmd2)
+	//{
+	//	printf("i'm exiting from main\n");
+	//	exit_on_error(&px_var, "Command not found", 0);
+	//}
 	pipex(&px_var);
 	free_array(px_var.cmd1);
 	free_array(px_var.cmd2);

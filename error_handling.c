@@ -12,50 +12,41 @@
 
 #include "pipex.h"
 
-void exit_on_error(t_var *px_var, char *info, int is_file_error)
+void exit_file_error(t_var *px_var, char *filename)
 {
-    write(2, "pipex: ", 7); // Print the prefix
+    // Print the error prefix
+    write(2, "pipex: ", 7);
+    perror(filename); // Print error message with file info
 
-    if (is_file_error)
+    // Set exit code based on the error
+    if (errno == EACCES || errno == ENOENT)
     {
-        // Check for file-related errors
-        if (errno == EACCES)
-        {
-            // Permission denied for input or output files
-            px_var->exitcode = 0; // Change exit code to 0 for permission denied on infile
-            perror(info); // Print the error message
-        }
-        else if (errno == ENOENT)
-        {
-            // File not found
-            px_var->exitcode = 0; // Exit code 0 for missing infile
-            perror(info); // Print the error message
-        }
-        else
-        {
-            // General file error
-            px_var->exitcode = 1; // Default exit code for other file errors
-            perror(info);
-        }
+        // Permission denied or file not found -> Bash exits with 1 for file-related issues
+        px_var->exitcode = 0;
+        if (filename == px_var->outfile)
+            px_var->exitcode = 1;
     }
     else
     {
-	    px_var->exitcode = errno;
-	    if (errno == ENOENT || errno == EACCES || errno == EISDIR)
-		    perror(info);
-	    else
-	    {
-		    ft_putstr_fd(info, 2);
-		    ft_putendl_fd(": command not found", 2);
-	    }
-	    if (px_var->cmd1)
-		    free_array(px_var->cmd1);
-	    if (px_var->cmd2)
-		    free_array(px_var->cmd2);
-	    if (px_var->exitcode == EACCES || px_var->exitcode == EISDIR)
-		    px_var->exitcode = 126;
-	    else
-		    px_var->exitcode = 127;
-	    exit(px_var->exitcode);
+        // Other file-related errors, default exit code is 1
+        px_var->exitcode = 1;
     }
+    // Exit with the appropriate exit code
+    exit(px_var->exitcode);
+}
+
+void    exit_command_error(t_var *px_var, char *cmd)
+{
+    write(2, "pipex: ", 7);
+    write(2, cmd, ft_strlen(cmd));
+    char buffer[50];
+    sprintf(buffer, "\nerrno: %d\n", errno);
+    write(2, buffer, ft_strlen(buffer));
+    if (errno == EACCES)
+        write(2, ": Permission denied", 20);
+    if (px_var->cmd1)
+		    free_array(px_var->cmd1);
+	if (px_var->cmd2)
+		    free_array(px_var->cmd2);
+    exit(0);  // Exit with 0 for now to focus on output display
 }

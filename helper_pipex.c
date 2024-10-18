@@ -6,7 +6,7 @@
 /*   By: hskrzypi <hskrzypi@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/16 21:03:04 by hskrzypi          #+#    #+#             */
-/*   Updated: 2024/10/17 13:11:55 by hskrzypi         ###   ########.fr       */
+/*   Updated: 2024/10/18 16:35:39 by hskrzypi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,18 +26,12 @@ void execute_command(t_var *px_var, int input_fd, int output_fd, char **cmd)
     if (!cmd_path)
     {
 	    clean_up(px_var);
-        perror("command path fail");
-//        if (px_var->cmd1)
-//          free_array(px_var->cmd1);
-//       if (px_var->cmd2)
-//            free_array(px_var->cmd2);
-	    exit_on_error(px_var, cmd[0], 0); // Handle error
+	    exit_command_error(px_var, cmd[0]); // Handle error
     }
-    execve(cmd_path, cmd, px_var->envp);
-    perror("execve fail");  // Execute the command
+    execve(cmd_path, cmd, px_var->envp);  // Execute the command
     free(cmd_path);
     clean_up(px_var);
-    exit_on_error(px_var, "execve error", 0); // If execve fails
+    exit_command_error(px_var, cmd[0]); // If execve fails
 }
 
 // Function to execute command for the first child
@@ -78,14 +72,14 @@ int pipex(t_var *px_var)
     if (pipe(fd) == -1)
     {
 	    clean_up(px_var);
-	    exit_on_error(px_var, "opening pipe error", 0);
+	    exit_file_error(px_var, "pipe creation error");
     }
     // First child process
     pid1 = fork();
     if (pid1 < 0)
     {
 	    clean_up(px_var);
-	    exit_on_error(px_var, "fork error", 0);
+	    exit_file_error(px_var, "fork error");
     }
     if (pid1 == 0) // Inside the first child
 	    handle_first_child(px_var, fd);
@@ -94,7 +88,7 @@ int pipex(t_var *px_var)
     if (pid2 < 0)
     {
 	    clean_up(px_var);
-	    exit_on_error(px_var, "fork error", 0);
+	    exit_file_error(px_var, "fork error");
     }
     if (pid2 == 0) // Inside the second child
         handle_second_child(px_var, fd);
