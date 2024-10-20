@@ -6,7 +6,7 @@
 /*   By: hskrzypi <hskrzypi@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/16 21:03:04 by hskrzypi          #+#    #+#             */
-/*   Updated: 2024/10/18 16:35:39 by hskrzypi         ###   ########.fr       */
+/*   Updated: 2024/10/20 18:50:48 by hskrzypi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,17 +21,11 @@ void execute_command(t_var *px, int input_fd, int output_fd, char **cmd)
     dup2(output_fd, STDOUT_FILENO); // Redirect output
     close(input_fd);
     close(output_fd);
-    if (!cmd[0] || is_empty_or_space(cmd[0]))
-    {
-        printf("Command is empty or contains spaces\n");  // DEBUG
-        fflush(stdout);  // Make sure the output is printed before exiting
-        clean_up(px);
-        exit_command_error(px, cmd[0]);
-    }
     cmd_path = get_command_path(cmd[0], px->envp);
     if (!cmd_path)
     {
 	    clean_up(px);
+	    //errno = ENOENT;
 	    exit_command_error(px, cmd[0]); // Handle error
     }
     execve(cmd_path, cmd, px->envp);  // Execute the command

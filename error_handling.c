@@ -38,9 +38,10 @@ void exit_file_error(t_var *px, char *filename)
 void    exit_command_error(t_var *px_var, char *cmd)
 {
     write(2, "pipex: ", 8);
+    perror(cmd);
     //if (!cmd || *cmd == '\0') // *cmd == '\0' checks for an empty string
     //    write(2, ": command not found\n", 20);
-    write(2, cmd, ft_strlen(cmd));  // Print the actual command
+    //write(2, cmd, ft_strlen(cmd));  // Print the actual command
     //    write(2, ": command not found\n", 20);
     // Handle empty or space-only command
     //if (cmd || is_empty_or_space(cmd))

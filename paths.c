@@ -6,7 +6,7 @@
 /*   By: hskrzypi <hskrzypi@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/11 16:04:33 by hskrzypi          #+#    #+#             */
-/*   Updated: 2024/10/17 13:33:52 by hskrzypi         ###   ########.fr       */
+/*   Updated: 2024/10/20 18:47:35 by hskrzypi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,8 +65,19 @@ char *get_command_path(const char *cmd, char *envp[])
 	int	i;
 	char *full_path;
 	
-	if (access(cmd, X_OK) == 0)
-		return (ft_strdup(cmd));
+	if (ft_strchr(cmd, '/')) 
+	{
+		if (access(cmd, X_OK) == 0)
+			return (ft_strdup(cmd));
+		else
+		{
+			if (access(cmd, F_OK) == 0)
+				errno = EACCES;
+			else
+				errno = ENOENT;
+			return (NULL);
+		}
+	}
 	path_env = find_path_in_envp(envp);
 	if (!path_env)
 		return (NULL);
@@ -86,6 +97,11 @@ char *get_command_path(const char *cmd, char *envp[])
 		{
 			free_array(directories);
 			return (full_path);
+		}
+		else
+		{
+			if (access(full_path, F_OK) == 0)
+				errno = EACCES;
 		}
 		free(full_path);
 		i++;
