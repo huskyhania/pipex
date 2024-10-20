@@ -39,17 +39,7 @@ void    exit_command_error(t_var *px_var, char *cmd)
 {
     write(2, "pipex: ", 8);
     perror(cmd);
-    //if (!cmd || *cmd == '\0') // *cmd == '\0' checks for an empty string
-    //    write(2, ": command not found\n", 20);
-    //write(2, cmd, ft_strlen(cmd));  // Print the actual command
-    //    write(2, ": command not found\n", 20);
-    // Handle empty or space-only command
-    //if (cmd || is_empty_or_space(cmd))
-    //    write(2, cmd, ft_strlen(cmd));  // Inform the user if the command is empty or just spaces
-    //if (!cmd)
-     //   write(2, ": command not found\n", 20);
-    //else
-    //    write(2, ": to be determined\n", 20);  // Placeholder for other errors
+
     char buffer[50];
     sprintf(buffer, "errno: %d\n", errno);
     write(2, buffer, ft_strlen(buffer));
