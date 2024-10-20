@@ -15,21 +15,21 @@
 
 int main(int argc, char **argv, char **envp)
 {
-	t_var	px_var;
+	t_var	px;
 
 	if (argc != 5)
 	{
 		write(2, "Params should be: file1 cmd1 cmd2 file2\n", 40);
 		return (1);
 	}
-	init_variables(argv, envp, &px_var);
+	init_variables(argv, envp, &px);
 	//if (!px_var.cmd1 || !px_var.cmd2)
 	//{
 	//	printf("i'm exiting from main\n");
 	//	exit_on_error(&px_var, "Command not found", 0);
 	//}
-	pipex(&px_var);
-	free_array(px_var.cmd1);
-	free_array(px_var.cmd2);
-	return (px_var.exitcode);
+	pipex(&px);
+	free_array(px.cmd1);
+	free_array(px.cmd2);
+	return (px.exitcode);
 }

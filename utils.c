@@ -13,45 +13,26 @@
 #include "pipex.h"
 #include <stdio.h>
 
-void	init_variables(char **argv, char **envp, t_var *px_var)
+void	init_variables(char **argv, char **envp, t_var *px)
 {
-	px_var->exitcode = 0;
-	px_var->infile = argv[1];
-	px_var->input_fd = -1;
-	px_var->output_fd = -1;
-	px_var->input_fd = open(px_var->infile, O_RDONLY);
- 	if (px_var->input_fd < 0)
+	px->exitcode = 0;
+	check_fd(argv, px);
+    check_commands(argv, px);
+	px->cmd1 = ft_split(argv[2], ' ');
+ 	if (!px->cmd1)
 	{
-		clean_up(px_var);
-		exit_file_error(px_var, px_var->infile);
+		clean_up(px);
+		perror("fail from inits after split");
+		exit_command_error(px, argv[2]);
 	}
-	px_var->cmd1 = NULL;
-	px_var->cmd1 = ft_split(argv[2], ' ');
- 	if (!px_var->cmd1)
+	px->cmd2 = ft_split(argv[3], ' ');
+	if (!px->cmd2)
 	{
-		clean_up(px_var);
-		exit_command_error(px_var, argv[2]);
+		clean_up(px);
+		free_array(px->cmd1);
+		exit_command_error(px, argv[3]);
 	}
-	px_var->cmd2 = NULL;
-	px_var->cmd2 = ft_split(argv[3], ' ');
-	if (!px_var->cmd2)
-	{
-		clean_up(px_var);
-		free_array(px_var->cmd1);
-		exit_command_error(px_var, argv[3]);
-	}
-	px_var->outfile = argv[4];
-	px_var->output_fd = open(px_var->outfile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-	if (px_var->output_fd < 0)
-	{
-		clean_up(px_var);
-		free_array(px_var->cmd1);
-		free_array(px_var->cmd2);
-		px_var->cmd1 = NULL;
-		px_var->cmd2 = NULL;
-		exit_file_error(px_var, px_var->outfile);
-	}
-	px_var->envp = envp;
+	px->envp = envp;
 }
 
 void	clean_up(t_var *px_var)
@@ -66,4 +47,17 @@ void	clean_up(t_var *px_var)
 		close(px_var->output_fd);
 		px_var->output_fd = -1;
 	}
+}
+
+int is_empty_or_space(const char *cmd)
+{
+    if (!cmd || cmd[0] == '\0')
+        return (1);
+    while (*cmd)
+    {
+        if (*cmd != ' ')
+            return (0);
+        cmd++;
+    }
+    return (1);
 }

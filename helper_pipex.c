@@ -13,7 +13,7 @@
 #include "pipex.h"
 #include <stdio.h>
 
-void execute_command(t_var *px_var, int input_fd, int output_fd, char **cmd)
+void execute_command(t_var *px, int input_fd, int output_fd, char **cmd)
 {
     char *cmd_path;
 
@@ -21,17 +21,23 @@ void execute_command(t_var *px_var, int input_fd, int output_fd, char **cmd)
     dup2(output_fd, STDOUT_FILENO); // Redirect output
     close(input_fd);
     close(output_fd);
-
-    cmd_path = get_command_path(cmd[0], px_var->envp);
+    if (!cmd[0] || is_empty_or_space(cmd[0]))
+    {
+        printf("Command is empty or contains spaces\n");  // DEBUG
+        fflush(stdout);  // Make sure the output is printed before exiting
+        clean_up(px);
+        exit_command_error(px, cmd[0]);
+    }
+    cmd_path = get_command_path(cmd[0], px->envp);
     if (!cmd_path)
     {
-	    clean_up(px_var);
-	    exit_command_error(px_var, cmd[0]); // Handle error
+	    clean_up(px);
+	    exit_command_error(px, cmd[0]); // Handle error
     }
-    execve(cmd_path, cmd, px_var->envp);  // Execute the command
+    execve(cmd_path, cmd, px->envp);  // Execute the command
     free(cmd_path);
-    clean_up(px_var);
-    exit_command_error(px_var, cmd[0]); // If execve fails
+    clean_up(px);
+    exit_command_error(px, cmd[0]); // If execve fails
 }
 
 // Function to execute command for the first child

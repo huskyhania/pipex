@@ -23,7 +23,7 @@ HEADERS_BONUS	:= -I ./include -I $(LIBMLX)/include -I $(LIBLIBFT)
 
 LIBS	:= -L$(LIBLIBFT) -lft -ldl -lglfw -pthread -lm
 
-SRCS	:= main.c paths.c error_handling.c utils.c helper_pipex.c
+SRCS	:= main.c paths.c error_handling.c utils.c helper_pipex.c input_checks.c
 #SRCS_BONUS	:= ./bonus/colors_bonus.c ./bonus/fractol_bonus.c ./bonus/hooks_bonus.c ./bonus/mandelbrot_bonus.c ./bonus/utils_bonus.c ./bonus/color_shift_bonus.c ./bonus/color_hooks_bonus.c
 
 OBJS	:= ${SRCS:.c=.o}

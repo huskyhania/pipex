@@ -32,20 +32,23 @@ typedef struct  s_pipex_variables
 	int	exitcode;
 }       t_var;
 
-int	pipex(t_var *px_var);
+int	pipex(t_var *px);
 char	*join_paths(const char *dir, const char *cmd);
 char	*find_path_in_envp(char *envp[]);
 char	*get_command_path(const char *cmd, char **envp);
 
 void	free_array(char **array);
-void	exit_file_error(t_var *px_var, char *filename);
-void	exit_command_error(t_var *px_var, char *cmd);
-void	init_variables(char **argv, char **envp, t_var *px_var);
+void	exit_file_error(t_var *px, char *filename);
+void	exit_command_error(t_var *px, char *cmd);
+void	init_variables(char **argv, char **envp, t_var *px);
+void    check_fd(char **argv, t_var *px);
+void	check_commands(char **argv, t_var *px);
 
-void	execute_command(t_var *px_var, int input_fd, int output_fd, char **cmd);
-void	handle_first_child(t_var *px_var, int fd[2]);
-void	handle_second_child(t_var *px_var, int fd[2]);
-void	wait_for_processes(t_var *px_var, int pid1, int pid2);
-void	clean_up(t_var *px_var);
+void	execute_command(t_var *px, int input_fd, int output_fd, char **cmd);
+void	handle_first_child(t_var *px, int fd[2]);
+void	handle_second_child(t_var *px, int fd[2]);
+void	wait_for_processes(t_var *px, int pid1, int pid2);
+void	clean_up(t_var *px);
+int		is_empty_or_space(const char *cmd);
 
 #endif
