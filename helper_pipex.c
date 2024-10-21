@@ -21,12 +21,11 @@ void execute_command(t_var *px, int input_fd, int output_fd, char **cmd)
     dup2(output_fd, STDOUT_FILENO); // Redirect output
     close(input_fd);
     close(output_fd);
-    cmd_path = get_command_path(cmd[0], px->envp);
+    cmd_path = get_command_path(cmd[0], px->envp, px);
     if (!cmd_path)
     {
 	    clean_up(px);
-	    //errno = ENOENT;
-	    exit_command_error(px, cmd[0]); // Handle error
+	    //exit_command_error(px, cmd[0]); // Handle error
     }
     execve(cmd_path, cmd, px->envp);  // Execute the command
     free(cmd_path);

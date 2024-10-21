@@ -36,7 +36,6 @@ char *find_path_in_envp(char *envp[])
         	return (envp[i] + 5);
         i++;
     }
-    errno = ENOENT;
     return (NULL); // Return NULL if PATH is not found
 }
 
@@ -58,11 +57,12 @@ void free_array(char **array)
 	return;
 }
 
-char *get_command_path(const char *cmd, char *envp[])
+char *get_command_path(const char *cmd, char *envp[], t_var *px)
 {
 	char *path_env;
 	char	**directories;
 	int	i;
+	int	found = 0;
 	char *full_path;
 	
 	if (ft_strchr(cmd, '/')) 
@@ -72,15 +72,25 @@ char *get_command_path(const char *cmd, char *envp[])
 		else
 		{
 			if (access(cmd, F_OK) == 0)
+			{
 				errno = EACCES;
+				display_error(px, cmd);
+			}
 			else
+			{
 				errno = ENOENT;
+				display_error(px, cmd);
+			}
 			return (NULL);
 		}
 	}
 	path_env = find_path_in_envp(envp);
 	if (!path_env)
+	{
+		errno = ENOENT;
+		display_error(px, cmd);
 		return (NULL);
+	}
 	directories = ft_split(path_env, ':');
 	if (!directories)
 		return (NULL);
@@ -98,14 +108,22 @@ char *get_command_path(const char *cmd, char *envp[])
 			free_array(directories);
 			return (full_path);
 		}
-		else
-		{
-			if (access(full_path, F_OK) == 0)
-				errno = EACCES;
-		}
+		else if (access(full_path, F_OK) == 0)
+			found = 1;
 		free(full_path);
 		i++;
 	}
 	free_array(directories);
+	if (found)
+	{
+		errno = EACCES;
+		display_error(px, cmd);
+	}
+	else
+	{
+		write(2, "pipex: ", 7);
+		write(2, cmd, ft_strlen(cmd));
+		write(2, ": command not found\n", 20);
+	}
 	return (NULL);
 }

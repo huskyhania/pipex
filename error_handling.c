@@ -35,24 +35,32 @@ void exit_file_error(t_var *px, char *filename)
     exit(px->exitcode);
 }
 
-void    exit_command_error(t_var *px_var, char *cmd)
+void    display_error(t_var *px, const char *cmd)
 {
-    write(2, "pipex: ", 8);
+    write(2, "pipex: ", 7);
     perror(cmd);
+}
 
-    char buffer[50];
-    sprintf(buffer, "errno: %d\n", errno);
-    write(2, buffer, ft_strlen(buffer));
+void    exit_command_error(t_var *px, char *cmd)
+{
+    //write(2, "pipex: ", 8);
+    //write(2, cmd, ft_strlen(cmd));
+
+    //char buffer[50];
+    //sprintf(buffer, "errno: %d\n", errno);
+    //write(2, buffer, ft_strlen(buffer));
 
     // Check for permission errors (EACCES)
-    if (errno == EACCES)
-        write(2, ": Permission denied\n", 20);
+    //if (errno == EACCES)
+    //    write(2, ": Permission denied\n", 20);
+    //else if (errno == ENOENT)
+    //    write(2, "No such file or directory", 26);
 
     // Clean up allocated resources
-    if (px_var->cmd1)
-        free_array(px_var->cmd1);
-    if (px_var->cmd2)
-        free_array(px_var->cmd2);
+    if (px->cmd1)
+        free_array(px->cmd1);
+    if (px->cmd2)
+        free_array(px->cmd2);
 
-    exit(0);  // Exit with an error code (use 1 for errors)
+    exit(px->exitcode);  // Exit with an error code (use 1 for errors)
 }

@@ -15,30 +15,28 @@
 void	check_fd(char **argv, t_var *px)
 {
 	px->infile = argv[1];
-	px->input_fd = -1;
-	px->input_fd = open(px->infile, O_RDONLY);
-	if (px->input_fd < 0)
-	{
-		clean_up(px);
-		write(2, "pipex: ", 7);
-		perror(argv[1]);
-		if (errno == EACCES || errno == ENOENT)
-			px->exitcode = 0;
-		else
-			px->exitcode = 1;
-	}
 	px->outfile = argv[4];
-	px->output_fd = -1;
 	px->output_fd = open(px->outfile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	if (px->output_fd < 0)
 	{
-		clean_up(px);
-		write(2, "pipex: ", 8);
+		write(2, "pipex: ", 7);
 		perror(argv[4]);
 		px->exitcode = 1;
 	}
-	if (px->input_fd < 0 || px->output_fd < 0)
+	px->input_fd = open(px->infile, O_RDONLY);
+	if (px->input_fd < 0)
+	{
+		write(2, "pipex: ", 7);
+		perror(argv[1]);
+		px->exitcode = 1;
+	}
+	if (px->exitcode != 0)
+	{
+		if (px->output_fd > -1)
+			px->exitcode = 0;
+		clean_up(px);
 		exit(px->exitcode);
+	}
 }
 
 void	check_commands(char **argv, t_var *px)
