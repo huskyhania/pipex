@@ -15,36 +15,35 @@
 
 void execute_command(t_var *px, int input_fd, int output_fd, char **cmd)
 {
-    char *cmd_path;
-
     dup2(input_fd, STDIN_FILENO);   // Redirect input
     dup2(output_fd, STDOUT_FILENO); // Redirect output
     close(input_fd);
     close(output_fd);
-    cmd_path = get_command_path(cmd[0], px->envp, px);
-    if (!cmd_path)
-    {
-	    clean_up(px);
-	    //exit_command_error(px, cmd[0]); // Handle error
-    }
-    execve(cmd_path, cmd, px->envp);  // Execute the command
-    free(cmd_path);
+    px->cmd_path = get_command_path(cmd[0], px->envp, px);
+    if (px->cmd_path)
+        execve(px->cmd_path, cmd, px->envp);  // Execute the command
+    free(px->cmd_path);
     clean_up(px);
     exit_command_error(px, cmd[0]); // If execve fails
 }
 
 // Function to execute command for the first child
-void handle_first_child(t_var *px_var, int fd[2])
+void handle_first_child(t_var *px, int fd[2])
 {
     close(fd[0]); // Close unused read end of the pipe
-    execute_command(px_var, px_var->input_fd, fd[1], px_var->cmd1); // Pass input, output, and command
+    execute_command(px, px->input_fd, fd[1], px->cmd1); // Pass input, output, and command
+    if (px->cmd_path)
+    {
+        free(px->cmd_path);
+        px->cmd_path = NULL;
+    }
 }
 
 // Function to execute command for the second child
-void handle_second_child(t_var *px_var, int fd[2])
+void handle_second_child(t_var *px, int fd[2])
 {
     close(fd[1]); // Close unused write end of the pipe
-    execute_command(px_var, fd[0], px_var->output_fd, px_var->cmd2); // Pass input, output, and command
+    execute_command(px, fd[0], px->output_fd, px->cmd2); // Pass input, output, and command
 }
 
 // Function to wait for both child processes and set the exit code

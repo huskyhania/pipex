@@ -32,6 +32,7 @@ void	init_variables(char **argv, char **envp, t_var *px)
 		free_array(px->cmd1);
 		exit_command_error(px, argv[3]);
 	}
+	px->cmd_path = NULL;
 	px->envp = envp;
 }
 

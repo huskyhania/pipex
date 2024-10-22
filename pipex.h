@@ -27,6 +27,7 @@ typedef struct  s_pipex_variables
 	char	**cmd2;
 	char	*infile;
 	char	*outfile;
+	char	*cmd_path;
 	int	input_fd;
 	int	output_fd;
 	int	exitcode;

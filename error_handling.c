@@ -57,6 +57,7 @@ void    exit_command_error(t_var *px, char *cmd)
     //    write(2, "No such file or directory", 26);
 
     // Clean up allocated resources
+    
     if (px->cmd1)
         free_array(px->cmd1);
     if (px->cmd2)
