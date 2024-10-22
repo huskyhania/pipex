@@ -35,7 +35,7 @@ typedef struct  s_pipex_variables
 int	pipex(t_var *px);
 char	*join_paths(const char *dir, const char *cmd);
 char	*find_path_in_envp(char *envp[]);
-char	*get_command_path(const char *cmd, char **envp);
+char *get_command_path(const char *cmd, char *envp[], t_var *px);
 
 void	free_array(char **array);
 void	exit_file_error(t_var *px, char *filename);
@@ -50,5 +50,6 @@ void	handle_second_child(t_var *px, int fd[2]);
 void	wait_for_processes(t_var *px, int pid1, int pid2);
 void	clean_up(t_var *px);
 int		is_empty_or_space(const char *cmd);
+void    display_error(t_var *px, const char *cmd);
 
 #endif

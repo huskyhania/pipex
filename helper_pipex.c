@@ -53,11 +53,11 @@ void wait_for_processes(t_var *px_var, int pid1, int pid2)
     int status;
 
     waitpid(pid1, &status, 0);
-    if (WIFEXITED(status) && WEXITSTATUS(status) != 0)
+    if (WIFEXITED(status))
         px_var->exitcode = WEXITSTATUS(status);
     
     waitpid(pid2, &status, 0);
-    if (WIFEXITED(status) && WEXITSTATUS(status) != 0)
+    if (WIFEXITED(status))
         px_var->exitcode = WEXITSTATUS(status);
 }
 

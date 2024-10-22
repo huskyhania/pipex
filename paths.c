@@ -65,20 +65,26 @@ char *get_command_path(const char *cmd, char *envp[], t_var *px)
 	int	found = 0;
 	char *full_path;
 	
+	px->exitcode = 0;
 	if (ft_strchr(cmd, '/')) 
 	{
 		if (access(cmd, X_OK) == 0)
+		{
+			px->exitcode = 0;
 			return (ft_strdup(cmd));
+		}
 		else
 		{
 			if (access(cmd, F_OK) == 0)
 			{
 				errno = EACCES;
+				px->exitcode = 126;
 				display_error(px, cmd);
 			}
 			else
 			{
 				errno = ENOENT;
+				px->exitcode = 127;
 				display_error(px, cmd);
 			}
 			return (NULL);
@@ -88,6 +94,7 @@ char *get_command_path(const char *cmd, char *envp[], t_var *px)
 	if (!path_env)
 	{
 		errno = ENOENT;
+		px->exitcode = 127;
 		display_error(px, cmd);
 		return (NULL);
 	}
@@ -106,6 +113,7 @@ char *get_command_path(const char *cmd, char *envp[], t_var *px)
 		if (access(full_path, X_OK) == 0)
 		{
 			free_array(directories);
+			px->exitcode = 0;
 			return (full_path);
 		}
 		else if (access(full_path, F_OK) == 0)
@@ -117,6 +125,7 @@ char *get_command_path(const char *cmd, char *envp[], t_var *px)
 	if (found)
 	{
 		errno = EACCES;
+		px->exitcode = 126;
 		display_error(px, cmd);
 	}
 	else
@@ -124,6 +133,7 @@ char *get_command_path(const char *cmd, char *envp[], t_var *px)
 		write(2, "pipex: ", 7);
 		write(2, cmd, ft_strlen(cmd));
 		write(2, ": command not found\n", 20);
+		px->exitcode = 127;
 	}
 	return (NULL);
 }
