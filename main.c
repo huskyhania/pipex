@@ -6,14 +6,14 @@
 /*   By: hskrzypi <hskrzypi@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/27 14:05:21 by hskrzypi          #+#    #+#             */
-/*   Updated: 2024/10/16 21:07:32 by hskrzypi         ###   ########.fr       */
+/*   Updated: 2024/10/22 18:27:33 by hskrzypi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 #include <stdio.h>
 
-int main(int argc, char **argv, char **envp)
+int	main(int argc, char **argv, char **envp)
 {
 	t_var	px;
 

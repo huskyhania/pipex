@@ -6,7 +6,7 @@
 /*   By: hskrzypi <hskrzypi@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/16 18:42:31 by hskrzypi          #+#    #+#             */
-/*   Updated: 2024/10/17 16:15:54 by hskrzypi         ###   ########.fr       */
+/*   Updated: 2024/10/22 19:17:14 by hskrzypi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,9 +17,9 @@ void	init_variables(char **argv, char **envp, t_var *px)
 {
 	px->exitcode = 0;
 	check_fd(argv, px);
-    check_commands(argv, px);
+	check_commands(argv, px);
 	px->cmd1 = ft_split(argv[2], ' ');
- 	if (!px->cmd1)
+	if (!px->cmd1)
 	{
 		clean_up(px);
 		perror("fail from inits after split");
@@ -50,15 +50,15 @@ void	clean_up(t_var *px_var)
 	}
 }
 
-int is_empty_or_space(const char *cmd)
+int	is_empty_or_space(const char *cmd)
 {
-    if (!cmd || cmd[0] == '\0')
-        return (1);
-    while (*cmd)
-    {
-        if (*cmd != ' ')
-            return (0);
-        cmd++;
-    }
-    return (1);
+	if (!cmd || cmd[0] == '\0')
+		return (1);
+	while (*cmd)
+	{
+		if (*cmd != ' ')
+			return (0);
+		cmd++;
+	}
+	return (1);
 }
