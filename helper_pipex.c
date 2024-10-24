@@ -11,7 +11,7 @@
 /* ************************************************************************** */
 
 #include "pipex.h"
-#include <stdio.h>
+#include <stdio.h>// DELETE MEEEE
 
 // Function redirect input to stdin and output to stdout
 //closes fds, calls get cmd path and executes a command, cleans up if exec fails
@@ -34,13 +34,24 @@ void	execute_command(t_var *px, int input_fd, int output_fd, char **cmd)
 // output and command to execute command
 void	handle_first_child(t_var *px, int fd[2])
 {
+	if (px->input_fd < 0)
+	{
+		close(fd[1]);
+		close(fd[0]);
+		exit(0); 
+	}
 	close(fd[0]);
 	execute_command(px, px->input_fd, fd[1], px->cmd1);
-	if (px->cmd_path)
-	{
-		free(px->cmd_path);
-		px->cmd_path = NULL;
-	}
+//	if (px->cmd_path)
+//	{
+//		free(px->cmd_path);
+//		px->cmd_path = NULL;
+//	}
+//	if (px->cmd1)
+//	{
+//		free_array(&px->cmd1);
+//		px->cmd1 = NULL;
+//	}
 }
 
 // Function to execute command for the second child, 
@@ -49,6 +60,27 @@ void	handle_first_child(t_var *px, int fd[2])
 void	handle_second_child(t_var *px, int fd[2])
 {
 	close(fd[1]);
+	if (px->output_fd < 0)
+	{
+		close(fd[0]);
+		if (px->cmd_path)
+		{
+			free(px->cmd_path);
+			px->cmd_path = NULL;
+		}
+		//if (px->cmd1)
+		//{
+		//	free_array(&px->cmd1);
+		//	px->cmd1 = NULL;
+		//}
+		if (px->cmd2)
+		{
+			free_array(&px->cmd2);
+			px->cmd2 = NULL;
+		}
+		px->exitcode = 1;
+		exit (1) ;
+	}
 	execute_command(px, fd[0], px->output_fd, px->cmd2);
 }
 
@@ -68,7 +100,7 @@ void	wait_for_processes(t_var *px_var, int pid1, int pid2)
 // Function opens a pipe, and with fork creates one child processes for commands
 // after handling children processes closes file descriptors, waits for children to finish
 // returns with exitcode set by handling files or commands
-int	pipex(t_var *px_var)
+int	pipex(t_var *px)
 {
 	int	pid1;
 	int	pid2;
@@ -76,27 +108,34 @@ int	pipex(t_var *px_var)
 
 	if (pipe(fd) == -1)
 	{
-		clean_up(px_var);
-		exit_file_error(px_var, "pipe creation error");
+		clean_up(px);
+		exit_file_error(px, "pipe creation error");
 	}
 	pid1 = fork();
 	if (pid1 < 0)
 	{
-		clean_up(px_var);
-		exit_file_error(px_var, "fork error");
+		clean_up(px);
+		exit_file_error(px, "fork error");
 	}
 	if (pid1 == 0)
-		handle_first_child(px_var, fd);
+		handle_first_child(px, fd);
+	if (px->cmd1)
+		free_array(&px->cmd1);
 	pid2 = fork();
 	if (pid2 < 0)
 	{
-		clean_up(px_var);
-		exit_file_error(px_var, "fork error");
+		clean_up(px);
+		exit_file_error(px, "fork error");
 	}
 	if (pid2 == 0)
-		handle_second_child(px_var, fd);
+		handle_second_child(px, fd);
 	close(fd[0]);
 	close(fd[1]);
-	wait_for_processes(px_var, pid1, pid2);
-	return (px_var->exitcode);
+	wait_for_processes(px, pid1, pid2);
+	clean_up(px);
+	if (px->cmd1)
+		free_array(&px->cmd1);
+	if (px->cmd2)
+		free_array(&px->cmd2);
+	return (px->exitcode);
 }

@@ -36,8 +36,8 @@ void	display_error(t_var *px, const char *cmd)
 void	exit_command_error(t_var *px, char *cmd)
 {
 	if (px->cmd1)
-		free_array(px->cmd1);
+		free_array(&px->cmd1);
 	if (px->cmd2)
-		free_array(px->cmd2);
+		free_array(&px->cmd2);
 	exit(px->exitcode);
 }

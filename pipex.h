@@ -38,7 +38,7 @@ char	*join_paths(const char *dir, const char *cmd);
 char	*find_path_in_envp(char *envp[]);
 char	*get_command_path(const char *cmd, char *envp[], t_var *px);
 
-void	free_array(char **array);
+void	free_array(char ***array);
 void	exit_file_error(t_var *px, char *filename);
 void	exit_command_error(t_var *px, char *cmd);
 void	init_variables(char **argv, char **envp, t_var *px);

@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 
 #include "pipex.h"
-#include <stdio.h>
 
 void	init_variables(char **argv, char **envp, t_var *px)
 {
@@ -29,7 +28,7 @@ void	init_variables(char **argv, char **envp, t_var *px)
 	if (!px->cmd2)
 	{
 		clean_up(px);
-		free_array(px->cmd1);
+		free_array(&px->cmd1);
 		exit_command_error(px, argv[3]);
 	}
 	px->cmd_path = NULL;

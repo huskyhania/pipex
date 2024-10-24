@@ -44,22 +44,22 @@ char	*find_path_in_envp(char *envp[])
 	return (NULL);
 }
 
-void	free_array(char **array)
+void free_array(char ***array)
 {
-	int	i;
+    int i;
 
-	i = 0;
-	if (!array)
-		return ;
-	while (array[i] != NULL)
-	{
-		free(array[i]);
-		array[i] = NULL;
-		i++;
-	}
-	free(array);
-	array = NULL;
-	return ;
+    if (!array || !*array) // Check if array or dereferenced array is NULL
+        return;
+
+    i = 0;
+    while ((*array)[i] != NULL) // Iterate through the array of strings
+    {
+        free((*array)[i]); // Free each string
+        (*array)[i] = NULL; // Set to NULL to avoid dangling pointer
+        i++;
+    }
+    free(*array); // Free the array of strings itself
+    *array = NULL; // Set the pointer to NULL to avoid dangling pointer
 }
 
 char	*get_command_path(const char *cmd, char *envp[], t_var *px)
@@ -113,12 +113,12 @@ char	*get_command_path(const char *cmd, char *envp[], t_var *px)
 		full_path = join_paths(directories[i], cmd);
 		if (!full_path)
 		{
-			free_array(directories);
+			free_array(&directories);
 			return (NULL);
 		}
 		if (access(full_path, X_OK) == 0)
 		{
-			free_array(directories);
+			free_array(&directories);
 			px->exitcode = 0;
 			return (full_path);
 		}
@@ -127,7 +127,7 @@ char	*get_command_path(const char *cmd, char *envp[], t_var *px)
 		free(full_path);
 		i++;
 	}
-	free_array(directories);
+	free_array(&directories);
 	if (found)
 	{
 		errno = EACCES;

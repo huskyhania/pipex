@@ -34,8 +34,6 @@ void	check_fd(char **argv, t_var *px)
 	{
 		if (px->output_fd > -1)
 			px->exitcode = 0;
-		clean_up(px);
-		exit(px->exitcode);
 	}
 }
 
@@ -46,7 +44,7 @@ void	check_commands(char **argv, t_var *px)
 		write(2, "pipex: ", 7);
 		write(2, argv[2], ft_strlen(argv[2]));
 		write(2, ": command not found", 20);
-		px->exitcode = 0;
+		px->exitcode = 127;
 	}
 	if (is_empty_or_space(argv[3]))
 	{
@@ -56,7 +54,10 @@ void	check_commands(char **argv, t_var *px)
 		write(2, argv[3], ft_strlen(argv[3]));
 		write(2, ": command not found", 20);
 		px->exitcode = 127;
-	}
-	if (is_empty_or_space(argv[2]) || is_empty_or_space(argv[3]))
 		exit(px->exitcode);
+	}
+	else
+		px->exitcode = 0;
+	//if (is_empty_or_space(argv[2]) || is_empty_or_space(argv[3]))
+	//	exit(px->exitcode);
 }

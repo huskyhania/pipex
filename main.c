@@ -29,9 +29,9 @@ int	main(int argc, char **argv, char **envp)
 	//	exit_on_error(&px_var, "Command not found", 0);
 	//}
 	pipex(&px);
-	if (px.cmd1)
-		free_array(px.cmd1);
-	if (px.cmd2)
-		free_array(px.cmd2);
+	//if (px.cmd1)
+	//	free_array(px.cmd1);
+	//if (px.cmd2)
+	//	free_array(px.cmd2);
 	return (px.exitcode);
 }
