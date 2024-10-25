@@ -33,7 +33,7 @@ typedef struct  s_pipex_variables
 	int	exitcode;
 }       t_var;
 
-int	pipex(t_var *px);
+int	pipex(t_var *px, char **argv);
 char	*join_paths(const char *dir, const char *cmd);
 char	*find_path_in_envp(char *envp[]);
 char	*get_command_path(const char *cmd, char *envp[], t_var *px);

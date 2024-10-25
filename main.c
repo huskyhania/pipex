@@ -28,7 +28,7 @@ int	main(int argc, char **argv, char **envp)
 	//	printf("i'm exiting from main\n");
 	//	exit_on_error(&px_var, "Command not found", 0);
 	//}
-	pipex(&px);
+	pipex(&px, argv);
 	//if (px.cmd1)
 	//	free_array(px.cmd1);
 	//if (px.cmd2)

@@ -26,7 +26,7 @@ void	execute_command(t_var *px, int input_fd, int output_fd, char **cmd)
 		execve(px->cmd_path, cmd, px->envp);
 	free(px->cmd_path);
 	clean_up(px);
-	exit_command_error(px, cmd[0]);
+	//exit_command_error(px, cmd[0]);
 }
 
 // Function to execute command for the first child, 
@@ -38,10 +38,14 @@ void	handle_first_child(t_var *px, int fd[2])
 	{
 		close(fd[1]);
 		close(fd[0]);
+		free_array(&px->cmd1);
 		exit(0); 
 	}
 	close(fd[0]);
 	execute_command(px, px->input_fd, fd[1], px->cmd1);
+	if (px->cmd1)
+		free_array(&px->cmd1);
+	exit(px->exitcode);
 //	if (px->cmd_path)
 //	{
 //		free(px->cmd_path);
@@ -82,6 +86,9 @@ void	handle_second_child(t_var *px, int fd[2])
 		exit (1) ;
 	}
 	execute_command(px, fd[0], px->output_fd, px->cmd2);
+	if (px->cmd2)
+		free_array(&px->cmd2);
+	exit(px->exitcode);
 }
 
 // Function to wait for both child processes and set the exit code
@@ -100,7 +107,7 @@ void	wait_for_processes(t_var *px_var, int pid1, int pid2)
 // Function opens a pipe, and with fork creates one child processes for commands
 // after handling children processes closes file descriptors, waits for children to finish
 // returns with exitcode set by handling files or commands
-int	pipex(t_var *px)
+int	pipex(t_var *px, char  **argv)
 {
 	int	pid1;
 	int	pid2;
@@ -121,6 +128,13 @@ int	pipex(t_var *px)
 		handle_first_child(px, fd);
 	if (px->cmd1)
 		free_array(&px->cmd1);
+	px->cmd2 = ft_split(argv[3], ' ');
+	if (!px->cmd2)
+	{
+		clean_up(px);
+		free_array(&px->cmd1);
+		exit_command_error(px, argv[3]);
+	}
 	pid2 = fork();
 	if (pid2 < 0)
 	{
