@@ -31,6 +31,8 @@ typedef struct  s_pipex_variables
 	int	input_fd;
 	int	output_fd;
 	int	exitcode;
+	int	error_cmd1;
+	int	error_cmd2;
 }       t_var;
 
 int	pipex(t_var *px, char **argv);

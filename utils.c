@@ -15,11 +15,14 @@
 void	init_variables(char **argv, char **envp, t_var *px)
 {
 	px->exitcode = 0;
-	check_fd(argv, px);
+	px->error_cmd1 = 0;
+	px->error_cmd2 = 0;
+	px->cmd1 = NULL;
+	//check_fd(argv, px);
 	check_commands(argv, px);
-	if (!is_empty_or_space(argv[2]))
+	if (!is_empty_or_space(argv[2]) && !px->error_cmd1)
 		px->cmd1 = ft_split(argv[2], ' ');
-	if (!px->cmd1)
+	if (!px->cmd1 && !px->error_cmd1)
 	{
 		clean_up(px);
 		perror("fail from inits after split");

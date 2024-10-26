@@ -14,6 +14,7 @@
 
 void	check_fd(char **argv, t_var *px)
 {
+	px->exitcode = 0;
 	px->infile = argv[1];
 	px->outfile = argv[4];
 	px->output_fd = open(px->outfile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
@@ -44,6 +45,7 @@ void	check_commands(char **argv, t_var *px)
 		write(2, "pipex: ", 7);
 		write(2, argv[2], ft_strlen(argv[2]));
 		write(2, ": command not found", 20);
+		px->error_cmd1 = 1;
 		px->exitcode = 127;
 	}
 	if (is_empty_or_space(argv[3]))

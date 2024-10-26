@@ -96,12 +96,18 @@ void	wait_for_processes(t_var *px_var, int pid1, int pid2)
 {
 	int	status;
 
-	waitpid(pid1, &status, 0);
-	if (WIFEXITED(status))
-		px_var->exitcode = WEXITSTATUS(status);
-	waitpid(pid2, &status, 0);
-	if (WIFEXITED(status))
-		px_var->exitcode = WEXITSTATUS(status);
+	if (pid1 > 0)
+	{
+		waitpid(pid1, &status, 0);
+		if (WIFEXITED(status))
+			px_var->exitcode = WEXITSTATUS(status);
+	}
+	if (pid2 > 0)
+	{
+		waitpid(pid2, &status, 0);
+		if (WIFEXITED(status))
+			px_var->exitcode = WEXITSTATUS(status);
+	}
 }
 
 // Function opens a pipe, and with fork creates one child processes for commands
@@ -109,8 +115,8 @@ void	wait_for_processes(t_var *px_var, int pid1, int pid2)
 // returns with exitcode set by handling files or commands
 int	pipex(t_var *px, char  **argv)
 {
-	int	pid1;
-	int	pid2;
+	int	pid1 = -1;
+	int	pid2 = -1;
 	int	fd[2];
 
 	if (pipe(fd) == -1)
@@ -118,14 +124,17 @@ int	pipex(t_var *px, char  **argv)
 		clean_up(px);
 		exit_file_error(px, "pipe creation error");
 	}
-	pid1 = fork();
-	if (pid1 < 0)
+	if (!px->error_cmd1)
 	{
-		clean_up(px);
-		exit_file_error(px, "fork error");
+		pid1 = fork();
+		if (pid1 < 0)
+		{
+			clean_up(px);
+			exit_file_error(px, "fork error");
+		}
+		if (pid1 == 0)
+			handle_first_child(px, fd);
 	}
-	if (pid1 == 0)
-		handle_first_child(px, fd);
 	if (px->cmd1)
 		free_array(&px->cmd1);
 	px->cmd2 = ft_split(argv[3], ' ');

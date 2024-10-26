@@ -22,6 +22,7 @@ int	main(int argc, char **argv, char **envp)
 		write(2, "Params should be: file1 cmd1 cmd2 file2\n", 40);
 		exit(EXIT_FAILURE);
 	}
+	check_fd(argv, &px);
 	init_variables(argv, envp, &px);
 	//if (!px_var.cmd1 || !px_var.cmd2)
 	//{
