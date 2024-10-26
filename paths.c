@@ -44,22 +44,21 @@ char	*find_path_in_envp(char *envp[])
 	return (NULL);
 }
 
-void free_array(char ***array)
+void	free_array(char ***array)
 {
-    int i;
+	int	i;
 
-    if (!array || !*array) // Check if array or dereferenced array is NULL
-        return;
-
-    i = 0;
-    while ((*array)[i] != NULL) // Iterate through the array of strings
-    {
-        free((*array)[i]); // Free each string
-        (*array)[i] = NULL; // Set to NULL to avoid dangling pointer
-        i++;
-    }
-    free(*array); // Free the array of strings itself
-    *array = NULL; // Set the pointer to NULL to avoid dangling pointer
+	if (!array || !*array)
+		return ;
+	i = 0;
+	while ((*array)[i] != NULL)
+	{
+		free((*array)[i]);
+		(*array)[i] = NULL;
+		i++;
+	}
+	free(*array);
+	*array = NULL;
 }
 
 char	*get_command_path(const char *cmd, char *envp[], t_var *px)

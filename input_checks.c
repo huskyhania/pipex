@@ -60,6 +60,4 @@ void	check_commands(char **argv, t_var *px)
 	}
 	else
 		px->exitcode = 0;
-	//if (is_empty_or_space(argv[2]) || is_empty_or_space(argv[3]))
-	//	exit(px->exitcode);
 }

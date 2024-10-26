@@ -24,15 +24,10 @@ int	main(int argc, char **argv, char **envp)
 	}
 	check_fd(argv, &px);
 	init_variables(argv, envp, &px);
-	//if (!px_var.cmd1 || !px_var.cmd2)
-	//{
-	//	printf("i'm exiting from main\n");
-	//	exit_on_error(&px_var, "Command not found", 0);
-	//}
 	pipex(&px, argv);
-	//if (px.cmd1)
-	//	free_array(px.cmd1);
-	//if (px.cmd2)
-	//	free_array(px.cmd2);
+	if (px.cmd1)
+		free_array(&px.cmd1);
+	if (px.cmd2)
+		free_array(&px.cmd2);
 	return (px.exitcode);
 }

@@ -20,22 +20,22 @@
 # include <sys/wait.h>
 # include <stdio.h>
 
-typedef struct  s_pipex_variables
+typedef struct s_pipex_variables
 {
+	int		input_fd;
+	int		output_fd;
+	int		exitcode;
+	int		error_cmd1;
+	int		error_cmd2;
 	char	**envp;
- 	char    **cmd1;
+	char	**cmd1;
 	char	**cmd2;
 	char	*infile;
 	char	*outfile;
 	char	*cmd_path;
-	int	input_fd;
-	int	output_fd;
-	int	exitcode;
-	int	error_cmd1;
-	int	error_cmd2;
-}       t_var;
+}		t_var;
 
-int	pipex(t_var *px, char **argv);
+int		pipex(t_var *px, char **argv);
 char	*join_paths(const char *dir, const char *cmd);
 char	*find_path_in_envp(char *envp[]);
 char	*get_command_path(const char *cmd, char *envp[], t_var *px);
