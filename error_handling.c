@@ -41,3 +41,20 @@ void	exit_command_error(t_var *px, char *cmd)
 		free_array(&px->cmd2);
 	exit(px->exitcode);
 }
+
+void	set_error_and_display(int code, t_var *px, const char *cmd)
+{
+	px->exitcode = code;
+	if (code == 126)
+	{
+		errno = EACCES;
+		display_error(px, cmd);
+	}
+	else if (code == 127)
+	{
+		errno = ENOENT;
+		write(2, "pipex: ", 7);
+		write(2, cmd, ft_strlen(cmd));
+		write(2, ": command not found\n", 20);
+	}
+}

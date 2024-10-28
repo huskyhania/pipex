@@ -21,7 +21,7 @@ void	execute_command(t_var *px, int input_fd, int output_fd, char **cmd)
 	dup2(output_fd, STDOUT_FILENO);
 	close(input_fd);
 	close(output_fd);
-	px->cmd_path = get_command_path(cmd[0], px->envp, px);
+	px->cmd_path = get_command_path(cmd[0], px);
 	if (px->cmd_path)
 		execve(px->cmd_path, cmd, px->envp);
 	free(px->cmd_path);

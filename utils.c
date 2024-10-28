@@ -56,3 +56,20 @@ int	is_empty_or_space(const char *cmd)
 	}
 	return (1);
 }
+
+void	free_array(char ***array)
+{
+	int	i;
+
+	if (!array || !*array)
+		return ;
+	i = 0;
+	while ((*array)[i] != NULL)
+	{
+		free((*array)[i]);
+		(*array)[i] = NULL;
+		i++;
+	}
+	free(*array);
+	*array = NULL;
+}

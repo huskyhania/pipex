@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 
 #include "pipex.h"
-#include <stdio.h>
 
 char	*join_paths(const char *dir, const char *cmd)
 {
@@ -44,58 +43,97 @@ char	*find_path_in_envp(char *envp[])
 	return (NULL);
 }
 
-void	free_array(char ***array)
+// Check if the command is executable or handle errors
+static char	*check_command(const char *cmd, t_var *px)
 {
-	int	i;
-
-	if (!array || !*array)
-		return ;
-	i = 0;
-	while ((*array)[i] != NULL)
+	if (access(cmd, X_OK) == 0)
 	{
-		free((*array)[i]);
-		(*array)[i] = NULL;
-		i++;
+		px->exitcode = 0;
+		return (ft_strdup(cmd));
 	}
-	free(*array);
-	*array = NULL;
+	if (access(cmd, F_OK) == 0)
+	{
+		errno = EACCES;
+		px->exitcode = 126;
+		display_error(px, cmd);
+	}
+	else
+	{
+		errno = ENOENT;
+		px->exitcode = 127;
+		display_error(px, cmd);
+	}
+	return (NULL);
 }
 
-char	*get_command_path(const char *cmd, char *envp[], t_var *px)
+static int	check_access(const char *full_path, t_var *px, int *found)
+{
+	if (access(full_path, X_OK) == 0)
+	{
+		px->exitcode = 0;
+		return (1);
+	}
+	else if (access(full_path, F_OK) == 0)
+	{
+		*found = 1;
+		return (0);
+	}
+	return (-1);
+}
+
+// Create full path and check it
+static char	*check_full_path(const char *cmd, const char *dir,
+	t_var *px, int *found)
+{
+	char	*full_path;
+
+	full_path = join_paths(dir, cmd);
+	if (!full_path)
+		return (NULL);
+	if (check_access(full_path, px, found) == 1)
+	{
+		return (full_path);
+	}
+	free(full_path);
+	return (NULL);
+}
+
+// Iterate through directories to find the command
+static char	*search_in_path(const char *cmd, char **directories, t_var *px)
 {
 	int		i;
 	int		found;
+	char	*result;
+
+	i = 0;
+	found = 0;
+	while (directories[i] != NULL)
+	{
+		result = check_full_path(cmd, directories[i], px, &found);
+		if (result)
+		{
+			free_array(&directories);
+			return (result);
+		}
+		i++;
+	}
+	free_array(&directories);
+	if (found)
+		set_error_and_display(126, px, cmd);
+	else
+		set_error_and_display(127, px, cmd);
+	return (NULL);
+}
+
+char	*get_command_path(const char *cmd, t_var *px)
+{
 	char	*path_env;
-	char	*full_path;
 	char	**directories;
 
 	px->exitcode = 0;
-	found = 0;
 	if (ft_strchr(cmd, '/'))
-	{
-		if (access(cmd, X_OK) == 0)
-		{
-			px->exitcode = 0;
-			return (ft_strdup(cmd));
-		}
-		else
-		{
-			if (access(cmd, F_OK) == 0)
-			{
-				errno = EACCES;
-				px->exitcode = 126;
-				display_error(px, cmd);
-			}
-			else
-			{
-				errno = ENOENT;
-				px->exitcode = 127;
-				display_error(px, cmd);
-			}
-			return (NULL);
-		}
-	}
-	path_env = find_path_in_envp(envp);
+		return (check_command(cmd, px));
+	path_env = find_path_in_envp(px->envp);
 	if (!path_env)
 	{
 		errno = ENOENT;
@@ -106,39 +144,5 @@ char	*get_command_path(const char *cmd, char *envp[], t_var *px)
 	directories = ft_split(path_env, ':');
 	if (!directories)
 		return (NULL);
-	i = 0;
-	while (directories[i] != NULL)
-	{
-		full_path = join_paths(directories[i], cmd);
-		if (!full_path)
-		{
-			free_array(&directories);
-			return (NULL);
-		}
-		if (access(full_path, X_OK) == 0)
-		{
-			free_array(&directories);
-			px->exitcode = 0;
-			return (full_path);
-		}
-		else if (access(full_path, F_OK) == 0)
-			found = 1;
-		free(full_path);
-		i++;
-	}
-	free_array(&directories);
-	if (found)
-	{
-		errno = EACCES;
-		px->exitcode = 126;
-		display_error(px, cmd);
-	}
-	else
-	{
-		write(2, "pipex: ", 7);
-		write(2, cmd, ft_strlen(cmd));
-		write(2, ": command not found\n", 20);
-		px->exitcode = 127;
-	}
-	return (NULL);
+	return (search_in_path(cmd, directories, px));
 }
