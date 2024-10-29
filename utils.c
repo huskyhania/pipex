@@ -17,18 +17,48 @@ void	init_variables(char **argv, char **envp, t_var *px)
 	px->error_cmd1 = 0;
 	px->error_cmd2 = 0;
 	px->cmd1 = NULL;
-	check_commands(argv, px);
-	if (!is_empty_or_space(argv[2]) && !px->error_cmd1)
-		px->cmd1 = ft_split(argv[2], ' ');
-	if (!px->cmd1 && !px->error_cmd1)
-	{
-		clean_up(px);
-		perror("fail from inits after split");
-		exit_command_error(px, argv[2]);
-	}
+	px->cmd2 = NULL;
+	//check_commands(argv, px);
+	//if (!is_empty_or_space(argv[2]) && !px->error_cmd1)
+	//	px->cmd1 = ft_split(argv[2], ' ');
+	//if (!px->cmd1 && !px->error_cmd1)
+	//{
+	//	clean_up(px);
+	//	perror("fail from inits after split");
+	//	exit_command_error(px, argv[2]);
+	//}
 	px->cmd_path = NULL;
 	px->envp = envp;
 }
+
+char **get_command(const char *argv, t_var *px)
+{
+	if (is_empty_or_space(argv))
+	{ 
+		write(2, "pipex: ", 7);
+		write(2, argv, ft_strlen(argv));
+		write(2, ": command not found\n", 20);
+		px->error_cmd1 = 1;
+		px->exitcode = 127;
+		return (NULL);
+	}
+	px->cmd1 = ft_split(argv, ' ');
+	if (!px->cmd1)
+	{
+		perror("command split error");
+		px->error_cmd1 = 1;
+	}
+	if (!px->error_cmd1)
+		px->cmd_path = get_command_path(px->cmd1[0], px);
+	if (!px->cmd_path)
+	{
+		free_array(&px->cmd1);
+		px->error_cmd1 = 1;
+		return (NULL);
+	}
+	return (px->cmd1);
+}
+
 
 void	clean_up(t_var *px_var)
 {

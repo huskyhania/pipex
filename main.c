@@ -24,7 +24,7 @@ int	main(int argc, char **argv, char **envp)
 	}
 	check_fd(argv, &px);
 	init_variables(argv, envp, &px);
-	pipex(&px, argv);
+	pipex(&px, argv, argc);
 	if (px.cmd1)
 		free_array(&px.cmd1);
 	if (px.cmd2)
