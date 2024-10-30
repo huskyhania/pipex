@@ -6,14 +6,14 @@
 /*   By: hskrzypi <hskrzypi@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/27 14:06:12 by hskrzypi          #+#    #+#             */
-/*   Updated: 2024/10/17 13:07:33 by hskrzypi         ###   ########.fr       */
+/*   Updated: 2024/10/30 23:14:16 by hskrzypi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef PIPEX_H
 # define PIPEX_H
 
-# include "./complete_Libft/libft.h"
+# include "../complete_Libft/libft.h"
 # include <unistd.h>
 # include <errno.h>
 # include <fcntl.h>
@@ -36,6 +36,7 @@ typedef struct s_pipex_variables
 }		t_var;
 
 int		pipex(t_var *px, char **argv, int argc);
+int		fork_and_execute(t_var *px, int input_fd, int output_fd, char *cmd);
 char	*join_paths(const char *dir, const char *cmd);
 char	*find_path_in_envp(char *envp[]);
 char	*get_command_path(const char *cmd, t_var *px);
@@ -44,7 +45,7 @@ void	free_array(char ***array);
 void	exit_file_error(t_var *px, char *filename);
 void	exit_command_error(t_var *px, char *cmd);
 void	init_variables(char **argv, char **envp, t_var *px);
-void	check_fd(char **argv, t_var *px);
+void	check_fd(char **argv, t_var *px, int argc);
 void	check_commands(char **argv, t_var *px);
 
 void	execute_command(t_var *px, int input_fd, int output_fd, char **cmd);
@@ -56,7 +57,6 @@ int		is_empty_or_space(const char *cmd);
 void	display_error(t_var *px, const char *cmd);
 void	set_error_and_display(int code, t_var *px, const char *cmd);
 void	set_redirections(int input_fd, int output_fd);
-int	fork_and_execute(t_var *px, int input_fd, int output_fd, char *cmd);
 void	pipex_helper(t_var *px);
 char	**get_command(const char *argv, t_var *px);
 
